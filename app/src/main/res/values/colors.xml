@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="primary_dark">#d15d0a</color>
+    <color name="primary">#FF710C</color>
+    <color name="primary_light">#ea7e33</color>
+    <color name="primary_light_af">#fa9f5f</color>
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="black_transparent">#99000000</color>
+    <color name="red">#FFDD2C00</color>
+    <color name="grey">#616161</color>
+    <color name="text_grey">#b0b4b6</color>
+    <color name="light_grey">#bdbdbd</color>
+    <color name="very_light_grey">#e0e0e0</color>
+    <color name="emoji_background">#f0f0f0</color>
+    <color name="msg_time">#CAC6C6</color>
+
+</resources>

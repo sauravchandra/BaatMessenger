@@ -1,0 +1,63 @@
+{
+  "project_info": {
+    "project_number": "950642247923",
+    "firebase_url": "https://baatmessenger.firebaseio.com",
+    "project_id": "baatmessenger",
+    "storage_bucket": "baatmessenger.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:950642247923:android:088b06d1ba02c7fa",
+        "android_client_info": {
+          "package_name": "saurav.chandra.baatmessenger"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "950642247923-43ht5isqa25fjb4r6pp5gcfe11apt407.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "saurav.chandra.baatmessenger",
+            "certificate_hash": "c065356ba8a578180e8c97a922debc588e570fb6"
+          }
+        },
+        {
+          "client_id": "950642247923-5e43aiq26gvad0d9e5ffgt61o2frholt.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "saurav.chandra.baatmessenger",
+            "certificate_hash": "334dfaf37f7464908aded8af8a1909fd1b11890d"
+          }
+        },
+        {
+          "client_id": "950642247923-0hk0j1cuug0go9coaf6e7aogu2m1dsu2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB1cpI9rCS9ggyO24A3caRBb-2AcfccULk"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "950642247923-0hk0j1cuug0go9coaf6e7aogu2m1dsu2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

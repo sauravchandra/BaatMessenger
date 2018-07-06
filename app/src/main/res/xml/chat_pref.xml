@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <ListPreference
+        android:key="chat_font_size"
+        android:defaultValue="Medium"
+        android:entries="@array/list_chat_font_size"
+        android:entryValues="@array/list_chat_font_size_values"
+        android:summary="Medium"
+        android:title="Chat font size" />
+
+    <Preference
+        android:key="wallpaper"
+        android:title="Wallpaper"/>
+
+    <Preference
+        android:key="delete_chat"
+        android:title="Delete all chats"/>
+
+</PreferenceScreen>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_vertical">
+
+
+    <ImageView
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_centerVertical="true"
+        android:src="@drawable/logo_white"
+        android:layout_marginLeft="10dp"
+        android:layout_alignParentLeft="true"/>
+
+
+    <TextView
+            android:id="@+id/actionbar_activity_name"
+            android:layout_width="wrap_content"
+            android:text="Baat Messenger"
+            android:layout_marginLeft="45dp"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:layout_centerVertical="true"
+            />
+
+    <ImageView
+        android:background="?android:attr/selectableItemBackground"
+        android:id="@+id/mainactivity_menu_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="10dp"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
+        android:src="@drawable/buddylist_menu"
+        />
+
+</RelativeLayout>

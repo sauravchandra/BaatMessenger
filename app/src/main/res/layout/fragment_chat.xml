@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:id="@+id/chat_layout"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/white">
+
+    <ListView
+        android:id="@+id/chatList"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:divider="@drawable/list_divider"
+        android:dividerHeight="1dp"
+        />
+
+    <RelativeLayout android:id="@+id/emptyChatList"
+        android:layout_height="fill_parent"
+        android:layout_width="fill_parent"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:layout_centerInParent="true"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:textColor="@color/grey"
+                android:textSize="20dp"
+                android:text="You have no conversations yet"/>
+            <TextView
+                android:layout_margin="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:textColor="@color/grey"
+                android:textSize="15dp"
+                android:text="Your messages will appear once you start chatting"/>
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:src="@drawable/chat_background"/>
+        </LinearLayout>
+
+    </RelativeLayout>
+
+    <RelativeLayout android:id="@+id/noContactsPermission_chat"
+        android:layout_height="fill_parent"
+        android:layout_width="fill_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:layout_centerInParent="true"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:textColor="@color/grey"
+                android:textSize="20dp"
+                android:text="Permission Missing"/>
+            <TextView
+                android:layout_margin="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:textColor="@color/grey"
+                android:textSize="15dp"
+                android:text="Baat Messenger does not have permission to access your contacts"/>
+            <Button
+                android:id="@+id/allow_permission_chat"
+                android:textColor="@color/white"
+                android:background="@color/primary"
+                android:foreground="?android:selectableItemBackground"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_gravity="center"
+                android:padding="10dp"
+                android:layout_marginBottom="20dp"
+                android:textSize="16sp"
+                android:text="ALLOW"/>
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:src="@drawable/users_background"/>
+        </LinearLayout>
+
+    </RelativeLayout>
+
+</LinearLayout>
+
+
+

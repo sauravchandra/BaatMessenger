@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/very_light_grey">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="20px"
+        android:layout_marginLeft="20px"
+        android:layout_marginRight="20px"
+        android:layout_marginBottom="0px"
+        android:padding="40px"
+        android:background="@drawable/background_with_shadow">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textStyle="bold"
+            android:padding="10px"
+            android:textColor="#FFDD2C00"
+            android:text="DELETING YOUR ACCOUNT WILL:"></TextView>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10px"
+            android:textAlignment="textStart"
+            android:text="@string/del_acc_txt_1">
+        </TextView>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10px"
+            android:textAlignment="textStart"
+            android:text="@string/del_acc_txt_2">
+        </TextView>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10px"
+            android:textAlignment="textStart"
+            android:text="@string/del_acc_txt_3">
+        </TextView>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/acc_del_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="20px"
+        android:layout_marginLeft="20px"
+        android:layout_marginRight="20px"
+        android:layout_marginBottom="0px"
+        android:padding="40px"
+        android:background="@drawable/background_with_shadow">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textAlignment="center"
+            android:text="To delete your account, confirm your phone number."></TextView>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="20px">
+
+            <TextView
+                android:layout_weight=".05"
+                android:layout_width="0px"
+                android:textAlignment="center"
+                android:layout_height="wrap_content"
+                android:text="+"/>
+        <EditText
+            android:id="@+id/del_acc_country_code"
+            android:layout_width="0px"
+            android:textAlignment="center"
+            android:layout_weight=".20"
+            android:inputType="number"
+            android:maxLength="3"
+            android:layout_height="wrap_content" />
+        <EditText
+            android:id="@+id/del_acc_phone_number"
+            android:layout_width="0px"
+            android:layout_weight=".70"
+            android:inputType="phone"
+            android:maxLength="15"
+            android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/del_acc_button"
+            android:onClick="deleteAccount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#FFDD2C00"
+            android:layout_margin="20px"
+            android:textSize="15dp"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:text="DELETE MY ACCOUNT"
+            android:clickable="true"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:gravity="center_horizontal"
+        android:id="@+id/acc_del_progress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="20px"
+        android:layout_marginLeft="20px"
+        android:layout_marginRight="20px"
+        android:layout_marginBottom="0px"
+        android:padding="40px"
+        android:background="@drawable/background_with_shadow">
+
+        <ProgressBar
+            android:layout_gravity="center_vertical"
+            style="?android:attr/progressBarStyleSmall"
+            android:layout_alignLeft="@+id/del_acc_progress_text"
+            android:layout_height="45dp"
+            android:layout_width="45dp"/>
+
+            <TextView
+                android:layout_marginLeft="15dp"
+                android:id="@+id/del_acc_progress_text"
+                android:text="Deleting Account"
+                android:gravity="center_vertical"
+                android:textSize="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="50dp" />
+
+
+        </LinearLayout>
+
+</LinearLayout>

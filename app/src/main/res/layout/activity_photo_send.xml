@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent" android:layout_height="fill_parent">
+
+    <it.sephiroth.android.library.imagezoom.ImageViewTouch
+        android:id="@+id/photo_view"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="@color/black" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/black_transparent"
+        android:layout_marginBottom="15dp"
+        >
+
+        <EditText
+            android:id="@+id/photo_caption"
+            android:layout_width="0dp"
+            android:layout_weight=".80"
+            android:layout_height="50dp"
+            android:textColorHint="#999999"
+            android:textColor="#FFFFFF"
+            android:hint="Write a caption..."
+            android:background="@android:color/transparent"
+            android:padding="15dp"
+            />
+
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/send"
+            android:id="@+id/sendButton"
+            android:layout_marginRight="15dp"
+            android:padding="8dp"
+            android:background="@drawable/photo_send_button"/>
+
+    </LinearLayout>
+
+
+</RelativeLayout>

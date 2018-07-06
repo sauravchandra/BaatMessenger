@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/chat_msg_image_layout"
+    android:orientation="vertical"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:padding="2dp">
+
+    <ImageView
+        android:id="@+id/chat_msg_image"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:scaleType="fitCenter"/>
+    <saurav.chandra.baatmessenger.EmojiconTextView
+        android:id="@+id/chat_msg_image_caption"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content" />
+    <TextView
+        android:paddingTop="4dp"
+        android:id="@+id/chat_msg_image_time_status"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content" />
+</LinearLayout>

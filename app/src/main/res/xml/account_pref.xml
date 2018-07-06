@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <PreferenceCategory
+        android:title="PRIVACY" >
+        <ListPreference
+            android:key="last_seen"
+            android:defaultValue="Everyone"
+            android:entries="@array/list_last_seen"
+            android:entryValues="@array/list_last_seen_values"
+            android:summary="Everyone"
+            android:title="Last Seen" />
+        <ListPreference
+            android:key="profile_picture"
+            android:defaultValue="Everyone"
+            android:entries="@array/list_profile_picture"
+            android:entryValues="@array/list_profile_picture_values"
+            android:summary="Everyone"
+            android:title="Profile photo" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="ACCOUNT SETTINGS" >
+
+        <Preference
+            android:key="delete_account"
+            android:title="Delete Account"/>
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

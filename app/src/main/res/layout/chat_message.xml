@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:id="@+id/chat_msg_layout"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:paddingRight="6dp"
+    android:paddingTop="3dp"
+    android:paddingLeft="6dp"
+    android:paddingBottom="3dp">
+
+    <saurav.chandra.baatmessenger.EmojiconTextView
+        android:id="@+id/chat_msg_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+    </saurav.chandra.baatmessenger.EmojiconTextView>
+
+    <TextView
+        android:id="@+id/chat_msg_time_status"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+    </TextView>
+
+</LinearLayout>

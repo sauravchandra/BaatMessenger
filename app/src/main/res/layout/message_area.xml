@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:emojicon="http://schemas.android.com/tools"
+    android:background="@android:color/transparent"
+    android:gravity="bottom"
+    android:orientation="horizontal">
+
+    <ImageView
+        android:id="@+id/emoji_button"
+        android:layout_width="0dp"
+        android:layout_weight=".10"
+        android:src="@drawable/emoji_button"
+        android:foreground="?android:selectableItemBackground"
+        android:background="@drawable/message_send_emoji_button"
+        android:layout_height="match_parent"
+        android:padding="8dp"/>
+
+    <saurav.chandra.baatmessenger.EmojiconEditText
+        android:id="@+id/messageArea"
+        android:layout_width="0dp"
+        android:layout_weight=".50"
+        android:layout_height="wrap_content"
+        android:background="@drawable/message_send_box_text"
+        android:hint="Write a message..."
+        android:maxHeight="120dp"
+        android:inputType="textCapSentences|textMultiLine"
+        android:textColor="#000000"
+        android:paddingTop="14dp"
+        android:paddingBottom="14dp"
+        android:layout_gravity="center"
+        android:gravity="center_vertical"
+        android:clickable="true"
+        android:focusable="true"
+        android:textSize="18dp"
+        android:textCursorDrawable="@drawable/cursor"
+        android:focusableInTouchMode="true"
+        android:textColorHint="#d3d6d7"
+        emojicon:emojiconSize="40dp" />
+
+    <ImageView
+        android:id="@+id/file_button"
+        android:layout_width="0dp"
+        android:layout_weight=".10"
+        android:src="@drawable/file_selector"
+        android:foreground="?android:selectableItemBackground"
+        android:background="@drawable/message_send_file_button"
+        android:layout_height="match_parent"
+        android:padding="7dp"
+        />
+
+    <ImageView
+        android:id="@+id/photo_button"
+        android:layout_width="0dp"
+        android:layout_weight=".10"
+        android:src="@drawable/photo_button"
+        android:foreground="?android:selectableItemBackground"
+        android:background="@drawable/message_send_photo_button"
+        android:layout_height="match_parent"
+        android:padding="6dp"
+        android:layout_marginRight="3dp"/>
+
+    <ImageView
+        android:id="@+id/sendButton"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginLeft="3dp"
+        android:src="@drawable/send"
+        android:padding="6dp"
+        android:foreground="?android:selectableItemBackground"
+        android:background="@drawable/message_send_box_button"/>
+</LinearLayout>

@@ -1,0 +1,37 @@
+<resources>
+
+    <style name="AppTheme" parent="android:Theme.Holo.Light" >
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
+
+    <style name="tabtextcolor" parent="@android:style/Widget.Holo.Light.ActionBar.TabText">
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="actionbar_tab" parent="@android:style/Widget.Holo.Light.ActionBar.TabView">
+    </style>
+
+    <style name="actionbar_tab_bar" parent="@android:style/Widget.Holo.Light.ActionBar.TabBar">
+        <item name="android:background">@drawable/tab_indicator</item>
+    </style>
+
+    <style name="splashScreenTheme" parent="@android:style/Theme.DeviceDefault.Light.NoActionBar">
+    </style>
+
+    <style name="Theme.FixedSize" parent="@android:style/Theme.Holo.Light">
+        <item name="android:actionBarTabTextStyle">@style/tabtextcolor</item>
+        <item name="android:actionBarTabStyle">@style/actionbar_tab</item>
+        <item name="android:actionBarTabBarStyle">@style/actionbar_tab_bar</item>
+        <item name="actionBarSize">200px</item>
+        <item name="android:actionBarSize">58dip</item>
+    </style>
+
+    <style name="Theme.FixedSize.noshadow" parent="@android:style/Theme.Holo.Light">
+        <item name="actionBarSize">200px</item>
+        <item name="android:actionBarSize">58dip</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
+
+
+</resources>
+

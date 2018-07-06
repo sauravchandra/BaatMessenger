@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Baat Messenger</string>
+    <string name="del_acc_txt_1">&#8226; Delete your account from Baat Messenger<br/></string>
+    <string name="del_acc_txt_2">&#8226; Erase your message history<br/></string>
+    <string name="del_acc_txt_3">&#8226; Delete all data associated with your account<br/></string>
+    <string name="app_policy_text">By tapping \"Continue\" you accept our <a href="http://sauravchandra.com/baat-messenger/terms-conditions.html">T&#38;C</a> and <a href="http://sauravchandra.com/baat-messenger/privacy-policy.html">Privacy Policy</a>.</string>
+    <string name="permission_main">To connect to with friends and family and send and receive photos, allow Baat Messenger to access your contacts, and your device\'s photos, media and files.</string>
+</resources>
+
+
