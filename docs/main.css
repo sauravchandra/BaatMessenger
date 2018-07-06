@@ -1,0 +1,142 @@
+html,body{
+  height: 100%;
+  padding:0;
+  margin: 0;
+}
+body{
+  display:flex;
+  margin: : 50px;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Montserrat', sans-serif;
+  color: #282828;
+  flex-wrap: wrap;
+}
+#content-holder{
+  display: flex;
+  margin: auto;
+  margin-right: 0;
+  margin-left: 0;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+#app-title{
+  font-size: 4em;
+  text-align: left;
+}
+#app-sub-title{
+  font-size: 2em;
+  text-align: left;
+  padding-bottom:20px;
+}
+#app-description-desktop{
+  font-size: 1em;
+  text-align:left;
+  max-width: 500px;
+}
+#app-download-button-desktop{
+  padding-top: 20px;
+}
+#app-download-button-desktop img{
+  height: 70px;
+}
+#app-photo-desktop img{
+  height: 550px;
+}
+#copyright-desktop{
+  padding-top: 6px;
+  padding-bottom: 6px;
+  font-size: 0.75em;
+}
+#app-photo-mobile{
+  display: none;
+}
+#app-download-button-mobile{
+  display: none;
+}
+#copyright-mobile{
+  display: none;
+}
+
+@media only screen and (max-width: 480px) {
+  html,body{
+    height: 100%;
+    padding:0;
+    margin: 0;
+  }
+  #content-holder{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top:70px;
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+  #app-title{
+    font-size: 2.25em;
+    text-align: center;
+  }
+  #app-sub-title{
+    font-size: 1.25em;
+    text-align: center;
+    padding-bottom:20px;
+  }
+  #app-description-desktop{
+    display: none;
+  }
+  #app-download-button-desktop{
+    display: none;
+  }
+  #app-photo-desktop{
+    display: none;
+  }
+  #copyright-desktop{
+    display: none;
+  }
+  #app-description-mobile{
+    display: block;
+  }
+  #app-download-button-mobile{
+    display: block;
+    padding-bottom:20px;
+  }
+  #app-download-button-mobile img{
+    height: 50px;
+  }
+  #app-photo-mobile{
+    display: block;
+  }
+  #app-photo-mobile img{
+    height: 450px;
+  }
+  #copyright-desktop{
+    display: block;
+  }
+}
+
+@media only screen and (max-width: 900px) {
+  html,body{
+    height: 100%;
+    padding:0;
+    margin: 0;
+  }
+  #app-title{
+    text-align: center;
+  }
+  #content-holder{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+  #app-description-desktop{
+    text-align:center;
+  }
+}
