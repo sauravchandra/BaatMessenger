@@ -19,6 +19,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.StrictMode;
 import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.provider.Settings;
@@ -90,6 +91,13 @@ public class SetupProfile extends Activity {
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (BuildConfig.DEBUG) {
+            StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
+                    .detectAll()
+                    .penaltyLog()
+                    .build());
+        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
@@ -178,7 +186,7 @@ public class SetupProfile extends Activity {
                     storageRef = storage.getReference();
                     profilePicRef = storageRef.child("images/profilepic/" + uid);
                     profilePicRef_high_res = storageRef.child("images/profilepic_high_res/" + uid);
-                    privacyRef = database.getReference("users/"+uid+"/privacy");
+                    privacyRef = database.getReference("privacyStatus/"+uid);
 
                     profilePicRef.putBytes(byteArray).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
                         @Override

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapShader;
@@ -35,12 +36,14 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import static android.content.Context.MODE_PRIVATE;
 import static saurav.chandra.baatmessenger.MainActivity.currentUser;
 import static saurav.chandra.baatmessenger.MainActivity.uid;
 
 public class ChatAdapter extends ArrayAdapter<ChatL> {
 
     private FirebaseDatabase database;
+    private SharedPreferences notificationPref;
 
     ChatAdapter(Context context, ArrayList<ChatL> chats) {
         super(context, 0, chats);
@@ -122,7 +125,7 @@ public class ChatAdapter extends ArrayAdapter<ChatL> {
                     tvName.setText(chat.user_name);
                     tvMsg.setCompoundDrawablesWithIntrinsicBounds(getMsgTicks(chat.user_last_message_state), 0,0 , 0);
 
-                    final DatabaseReference msg_ref = database.getReference("lastMessage/" + uid+"_"+chat.user_uid+"/msg_state");
+                    final DatabaseReference msg_ref = database.getReference("lastMessage/" + uid+"/"+chat.user_uid+"/msg_state");
                     msg_ref.addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
@@ -191,6 +194,7 @@ public class ChatAdapter extends ArrayAdapter<ChatL> {
                         }
                         tvTime.setText(chat.user_last_message_time);
                     } else {
+                        tvMsg.setCompoundDrawablesRelativeWithIntrinsicBounds(0,0,0,0);
                         tvUnreadMsg.setVisibility(View.GONE);
                         tvMsg.setTypeface(null, Typeface.NORMAL);
                         tvTime.setTypeface(null, Typeface.NORMAL);

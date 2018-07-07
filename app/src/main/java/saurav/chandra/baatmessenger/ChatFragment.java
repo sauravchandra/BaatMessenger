@@ -64,7 +64,7 @@ public class ChatFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_chat, container, false);
         database = ((BaatMessenger) getActivity().getApplication()).getDatabase();
-        last_msg_ref = database.getReference("lastMessage");
+        last_msg_ref = database.getReference("lastMessage/"+uid);
         query = last_msg_ref.orderByChild("last_modified");
         query.keepSynced(true);
 
@@ -135,8 +135,8 @@ public class ChatFragment extends Fragment {
                     for (DataSnapshot last_msg_data_snapshot : lastmsgdataSnapshot.getChildren()) {
 
                         if (last_msg_data_snapshot.hasChildren()) {
-                            final String chat_uids = last_msg_data_snapshot.getKey();
-                            if (chat_uids.contains(uid + "_")) {
+                            final String chat_wit_uid = last_msg_data_snapshot.getKey();
+                            if (chat_wit_uid.equals(chat_wit_uid)) {
 
                                 final String lastm_uid = (String) last_msg_data_snapshot.child("uid").getValue();
                                 final String lastm_phone_number = (String) last_msg_data_snapshot.child("phone_number").getValue();
@@ -153,7 +153,7 @@ public class ChatFragment extends Fragment {
                                 final String lastm_fcm_id = (String) last_msg_data_snapshot.child("fcm_id").getValue();
                                 String lastm_unread_msg = (String) last_msg_data_snapshot.child("unread_msg").getValue();
 
-                                Chats.add(new ChatL(lastm_uid, lastm_phone_number, lastm_name, lastm_message, lastm_msg_sender, lastm_msg_state, lastm_message_time, lastm_fcm_id,lastm_unread_msg));
+                                Chats.add(new ChatL(lastm_uid, lastm_phone_number, lastm_name, lastm_message, lastm_msg_sender, lastm_msg_state, lastm_message_time, lastm_fcm_id, lastm_unread_msg));
                                 chat_adapter.notifyDataSetChanged();
                                 chatlist.setVisibility(View.VISIBLE);
                                 empty_chatlist.setVisibility(View.GONE);

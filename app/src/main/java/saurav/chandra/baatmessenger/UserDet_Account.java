@@ -55,7 +55,7 @@ public class UserDet_Account extends PreferenceActivity implements SharedPrefere
         database=((BaatMessenger) this.getApplication()).getDatabase();
         myConnectionsRef = database.getReference("presenceStatus/"+uid+"/connected");
         lastOnlineRef = database.getReference("presenceStatus/"+uid+"/lastOnline");
-        privacyRef = database.getReference("users/"+uid+"/privacy");
+        privacyRef = database.getReference("privacyStatus/"+uid);
 
         ActionBar actionBar = getActionBar();
         actionBar.setDisplayShowCustomEnabled(true);
@@ -110,7 +110,6 @@ public class UserDet_Account extends PreferenceActivity implements SharedPrefere
         if (key.equals("last_seen")) {
             Preference lastSeenPref = findPreference(key);
             lastSeenPref.setSummary(sharedPreferences.getString(key, ""));
-
             privacyRef.child("last_seen").setValue(sharedPreferences.getString(key, ""));
         }
 

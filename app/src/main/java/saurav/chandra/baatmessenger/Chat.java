@@ -96,6 +96,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
@@ -139,7 +140,7 @@ public class Chat extends Activity {
     //Getting current user varaible deceleration
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
-    private String uid, current_user_name, current_user_phone_number, current_user_fcm_id, chat_with_uid, chat_uids, chat_with_name, chat_with_fcm_id, chat_with_phone_number;
+    private String uid, current_user_name, current_user_phone_number, current_user_fcm_id, chat_with_uid, chat_with_name, chat_with_fcm_id, chat_with_phone_number;
 
     private String downloadUrl;
 
@@ -154,10 +155,12 @@ public class Chat extends Activity {
     private DatabaseReference userTypingRef;
     private DatabaseReference myConnectionsRef;
     private DatabaseReference chatMediaStorage;
+    private DatabaseReference chatWithUserPrivacyRef;
+    private DatabaseReference chatWithUserTypingRef;
 
     private DatabaseReference chat_ref_1, chat_ref_2, last_msg_ref_1, last_msg_ref_2;
     private ChildEventListener chat_listener;
-
+    private Query chat_msg_ref1_query, chat_msg_ref2_query;
     private SharedPreferences settings_prefs, prefs;
 
     private View rootView;
@@ -205,14 +208,6 @@ public class Chat extends Activity {
         prefs = getSharedPreferences(Config.SHARED_PREF, MODE_PRIVATE);
         current_user_fcm_id = prefs.getString("regId", null);
 
-        //Sort the current user uid and chat with user uid alphabetically
-        int compare = uid.compareTo(chat_with_uid);
-        if (compare < 0) {
-            chat_uids = uid + "_" + chat_with_uid;
-        } else {
-            chat_uids = chat_with_uid + "_" + uid;
-        }
-
         //Get a refernce to Firebase storage
         storage = ((BaatMessenger) this.getApplication()).getStorage();
         storageRef = storage.getReference();
@@ -226,49 +221,10 @@ public class Chat extends Activity {
         lastOnlineRef = database.getReference("presenceStatus/" + chat_with_uid + "/lastOnline"); //If not, when was he last online?
         mylastOnlineRef = database.getReference("presenceStatus/" + uid + "/lastOnline");
 
-        userTypingRef = database.getReference("typingStatus/" + chat_uids + "/" + uid); //Are you typing?
-        DatabaseReference chatWithUserTypingRef = database.getReference("typingStatus/" + chat_uids + "/" + chat_with_uid);
+        userTypingRef = database.getReference("typingStatus/" + uid + "/" + uid); //Are you typing?
+        chatWithUserTypingRef = database.getReference("typingStatus/" + uid + "/" + chat_with_uid); //Is the user you are talking with typing?
 
-        DatabaseReference chatWithUserPrivacyRef = database.getReference("users/" + chat_with_uid + "/privacy");
-
-        chatWithUserPrivacyRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    String profile_pic = dataSnapshot.child("profile_pic").getValue().toString();
-                    String last_seen = dataSnapshot.child("last_seen").getValue().toString();
-
-                    if (profile_pic.equals("Everyone") || profile_pic.equals("My contacts")) {
-                        Glide.with(getApplicationContext())                             //Set chat with user photo
-                                .using(new FirebaseImageLoader())
-                                .load(profilePicRef)
-                                .thumbnail(Glide.with(getApplicationContext()).load(R.drawable.default_dp).transform(new CircleTransform(getApplicationContext())))
-                                .crossFade()
-                                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                                .transform(new CircleTransform(getApplicationContext()))
-                                .into(actionbar_user_photo_view);
-                    } else {
-                        Glide.with(getApplicationContext())                             //Set default photo
-                                .load(R.drawable.default_dp)
-                                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                                .transform(new CircleTransform(getApplicationContext()))
-                                .into(actionbar_user_photo_view);
-
-                    }
-
-                    if (last_seen.equals("Nobody")) {
-                        actionbar_user_status.setVisibility(View.GONE);
-                    } else {
-                        actionbar_user_status.setVisibility(View.VISIBLE);
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
+        chatWithUserPrivacyRef = database.getReference("privacyStatus/" + chat_with_uid );
 
 
         //Inflate the actionbar and set various details
@@ -314,6 +270,38 @@ public class Chat extends Activity {
         Uri notification = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + getPackageName() + "/raw/send");
         final Ringtone r = RingtoneManager.getRingtone(this, notification);
 
+        chatWithUserPrivacyRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    String profile_pic = dataSnapshot.child("profile_pic").getValue().toString();
+
+                    if (profile_pic.equals("Everyone") || profile_pic.equals("My contacts")) {
+                        Glide.with(getApplicationContext())                             //Set chat with user photo
+                                .using(new FirebaseImageLoader())
+                                .load(profilePicRef)
+                                .thumbnail(Glide.with(getApplicationContext()).load(R.drawable.default_dp).transform(new CircleTransform(getApplicationContext())))
+                                .crossFade()
+                                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                                .transform(new CircleTransform(getApplicationContext()))
+                                .into(actionbar_user_photo_view);
+                    } else {
+                        Glide.with(getApplicationContext())                             //Set default photo
+                                .load(R.drawable.default_dp)
+                                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                                .transform(new CircleTransform(getApplicationContext()))
+                                .into(actionbar_user_photo_view);
+
+                    }
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
         myConnectionsRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(final DataSnapshot snapshot) {
@@ -515,13 +503,16 @@ public class Chat extends Activity {
         photoButton = (ImageView) findViewById(R.id.photo_button);
         fileButton = (ImageView) findViewById(R.id.file_button);
 
-        chat_ref_1 = database.getReference("messages/" + uid + "_" + chat_with_uid);
-        chat_ref_2 = database.getReference("messages/" + chat_with_uid + "_" + uid);
-        last_msg_ref_1 = database.getReference("lastMessage/" + uid + "_" + chat_with_uid);
-        last_msg_ref_2 = database.getReference("lastMessage/" + chat_with_uid + "_" + uid);
+        chat_ref_1 = database.getReference("messages/" + uid + "/" + chat_with_uid);
+        chat_ref_2 = database.getReference("messages/" + chat_with_uid + "/" + uid);
+        last_msg_ref_1 = database.getReference("lastMessage/" + uid + "/" + chat_with_uid);
+        last_msg_ref_2 = database.getReference("lastMessage/" + chat_with_uid + "/" + uid);
 
         chat_ref_1.keepSynced(true);
         chat_ref_2.keepSynced(true);
+
+        chat_msg_ref1_query = chat_ref_1.limitToLast(100);
+        chat_msg_ref2_query = chat_ref_2.limitToLast(100);
 
         chat_listener = new ChildEventListener() {
             @Override
@@ -565,6 +556,9 @@ public class Chat extends Activity {
 
                         if (msg_sender_uid != null) {
                             if (msg_sender_uid.equals(uid)) {
+
+                                last_msg_ref_1.child("unread_msg").setValue("0");
+
                                 if (isImage != null) {
                                     if (isImage.equals("true")) {
                                         addImageBox(message, photo_caption, message_time, 1, msg_state, getTextSize(), msg_id, msg_uid);
@@ -572,6 +566,7 @@ public class Chat extends Activity {
                                         addMessageBox(message, message_time, 1, msg_state, getTextSize(), msg_id, msg_uid);
                                     }
                                 }
+
                             } else {
                                 if (isImage != null) {
                                     if (isImage.equals("true")) {
@@ -579,19 +574,23 @@ public class Chat extends Activity {
                                     } else {
                                         addMessageBox(message, message_time, 2, msg_state, getTextSize(), msg_id, msg_uid);
                                     }
+
+
+                                    chat_ref_1.child(msg_id).child("msg_state").setValue("3").addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            chat_ref_2.child(msg_id).child("msg_state").setValue("3").addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<Void> task) {
+                                                    last_msg_ref_1.child("msg_state").setValue("3");
+                                                    last_msg_ref_1.child("unread_msg").setValue("0");
+                                                }
+                                            });
+                                        }
+                                    });
                                 }
-                                chat_ref_1.child(msg_id).child("msg_state").setValue("3").addOnCompleteListener(new OnCompleteListener<Void>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<Void> task) {
-                                        chat_ref_2.child(msg_id).child("msg_state").setValue("3").addOnCompleteListener(new OnCompleteListener<Void>() {
-                                            @Override
-                                            public void onComplete(@NonNull Task<Void> task) {
-                                                last_msg_ref_1.child("msg_state").setValue("3");
-                                                last_msg_ref_1.child("unread_msg").setValue("0");
-                                            }
-                                        });
-                                    }
-                                });
+
+
                             }
                         }
                     }
@@ -625,18 +624,7 @@ public class Chat extends Activity {
             final String photo_caption = intent.getStringExtra("photo_caption");
             Uri file = Uri.fromFile(new File(photo_uri));
 
-            Map<String, Object> map2 = new HashMap<String, Object>();
-            final Random rn = new Random();
-            map2.put("msg_uid", System.currentTimeMillis() + rn.nextInt(100));
-            map2.put("msg_text", "default");
-            map2.put("msg_time", getTime());
-            map2.put("msg_state", "1");
-            map2.put("msg_sender", uid);
-            map2.put("photo_caption", photo_caption);
-            map2.put("msg_image", "true");
-
-            final DatabaseReference msgSendRef = chat_ref_2.push();
-
+            //Current user last message
             last_msg_ref_1.child("last_modified").setValue(-1 * System.currentTimeMillis());
             last_msg_ref_1.child("uid").setValue(chat_with_uid);
             last_msg_ref_1.child("phone_number").setValue(chat_with_phone_number);
@@ -648,14 +636,23 @@ public class Chat extends Activity {
             last_msg_ref_1.child("msg_image").setValue("true");
             last_msg_ref_1.child("fcm_id").setValue(chat_with_fcm_id);
 
-            DatabaseReference unread_msg_ref = last_msg_ref_1.child("unread_msg");
-            unread_msg_ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            final DatabaseReference unread_msg_ref1 = last_msg_ref_1.child("unread_msg");
+            unread_msg_ref1.setValue("0");
+            unread_msg_ref1.keepSynced(true);
+
+            /*unread_msg_ref1.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    if (dataSnapshot.exists()) {
-                        last_msg_ref_1.child("unread_msg").setValue(String.valueOf(Integer.valueOf(dataSnapshot.getValue().toString()) + 1));
-                    } else {
-                        last_msg_ref_1.child("unread_msg").setValue("1");
+
+                    if(dataSnapshot.exists()) {
+                        if (!String.valueOf(Integer.valueOf(dataSnapshot.getValue().toString())).equals("0")) {
+                            unread_msg_ref1.setValue(String.valueOf(Integer.valueOf(dataSnapshot.getValue().toString()) + 1));
+                        } else {
+                            unread_msg_ref1.setValue("1");
+                        }
+                    }
+                    else {
+                        unread_msg_ref1.setValue("1");
                     }
                 }
 
@@ -663,19 +660,35 @@ public class Chat extends Activity {
                 public void onCancelled(DatabaseError databaseError) {
 
                 }
-            });
+            });*/
 
-            msgSendRef.setValue(map2).addOnCompleteListener(new OnCompleteListener<Void>() {
+            //Chat with user message
+            Map<String, Object> map2 = new HashMap<String, Object>();
+            final Random rn = new Random();
+            map2.put("msg_uid", System.currentTimeMillis() + rn.nextInt(100));
+            map2.put("msg_text", "default");
+            map2.put("msg_time", getTime());
+            map2.put("msg_state", "1");
+            map2.put("msg_sender", uid);
+            map2.put("photo_caption", photo_caption);
+            map2.put("msg_image", "true");
+
+            final DatabaseReference msgSendRef2 = chat_ref_2.push();
+
+            msgSendRef2.setValue(map2).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
-                    msgSendRef.child("msg_state").setValue("2");
-                    last_msg_ref_1.child("msg_state").setValue("2");
+                    msgSendRef2.child("msg_state").setValue("1");
+                    last_msg_ref_1.child("msg_state").setValue("1");
                 }
             });
 
-            chat_ref_1.child(msgSendRef.getKey()).setValue(map2).addOnCompleteListener(new OnCompleteListener<Void>() {
+            //Current user message
+            chat_ref_1.child(msgSendRef2.getKey()).setValue(map2).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
+
+                    //Chat with user last message
                     last_msg_ref_2.child("last_modified").setValue(-1 * System.currentTimeMillis());
                     last_msg_ref_2.child("uid").setValue(uid);
                     last_msg_ref_2.child("phone_number").setValue(current_user_phone_number);
@@ -687,14 +700,21 @@ public class Chat extends Activity {
                     last_msg_ref_2.child("msg_image").setValue("true");
                     last_msg_ref_2.child("fcm_id").setValue(current_user_fcm_id);
 
-                    DatabaseReference unread_msg_ref = last_msg_ref_2.child("unread_msg");
-                    unread_msg_ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                    final DatabaseReference unread_msg_ref2 = last_msg_ref_2.child("unread_msg");
+                    unread_msg_ref2.keepSynced(true);
+                    unread_msg_ref2.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
-                            if (dataSnapshot.exists()) {
-                                last_msg_ref_2.child("unread_msg").setValue(String.valueOf(Integer.valueOf(dataSnapshot.getValue().toString()) + 1));
-                            } else {
-                                last_msg_ref_2.child("unread_msg").setValue("1");
+
+                            if(dataSnapshot.exists()) {
+                                if (!String.valueOf(Integer.valueOf(dataSnapshot.getValue().toString())).equals("0")) {
+                                    unread_msg_ref2.setValue(String.valueOf(Integer.valueOf(dataSnapshot.getValue().toString()) + 1));
+                                } else {
+                                    unread_msg_ref2.setValue("1");
+                                }
+                            }
+                            else {
+                                unread_msg_ref2.setValue("1");
                             }
                         }
 
@@ -704,13 +724,13 @@ public class Chat extends Activity {
                         }
                     });
 
-                    chat_ref_1.child(msgSendRef.getKey()).child("msg_state").setValue("2");
+                    chat_ref_1.child(msgSendRef2.getKey()).child("msg_state").setValue("1");
                 }
             });
 
-            StorageReference chat_image_storageRef = storageRef.child("images/chat_image_data/" + uid + "/" + chat_with_uid + "/IMG_BM_" + String.valueOf(System.currentTimeMillis()) + "_" + file.getLastPathSegment());
-            UploadTask uploadTask = chat_image_storageRef.putFile(file);
-            uploadTask.addOnFailureListener(new OnFailureListener() {
+            StorageReference chat_image_storageRef1 = storageRef.child("images/chat_image_data/" + uid + "/" + chat_with_uid + "/IMG_BM_" + String.valueOf(System.currentTimeMillis()) + "_" + file.getLastPathSegment());
+            UploadTask uploadTask1 = chat_image_storageRef1.putFile(file);
+            uploadTask1.addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception exception) {
                     Log.d("upload", "failed");
@@ -720,10 +740,28 @@ public class Chat extends Activity {
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
 
                     downloadUrl = taskSnapshot.getDownloadUrl().toString();
-                    msgSendRef.child("msg_text").setValue(downloadUrl);
-                    chat_ref_1.child(msgSendRef.getKey()).child("msg_text").setValue(downloadUrl);
+                    msgSendRef2.child("msg_text").setValue(downloadUrl);
+                    chat_ref_1.child(msgSendRef2.getKey()).child("msg_text").setValue(downloadUrl);
                 }
             });
+
+            StorageReference chat_image_storageRef2 = storageRef.child("images/chat_image_data/" + chat_with_uid + "/" + uid + "/IMG_BM_" + String.valueOf(System.currentTimeMillis()) + "_" + file.getLastPathSegment());
+            UploadTask uploadTask2 = chat_image_storageRef2.putFile(file);
+            uploadTask2.addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    Log.d("upload", "failed");
+                }
+            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+
+                    downloadUrl = taskSnapshot.getDownloadUrl().toString();
+                    msgSendRef2.child("msg_text").setValue(downloadUrl);
+                    chat_ref_2.child(msgSendRef2.getKey()).child("msg_text").setValue(downloadUrl);
+                }
+            });
+
         }
 
         sendButton.setOnClickListener(new View.OnClickListener() {
@@ -739,17 +777,7 @@ public class Chat extends Activity {
                         r.play();
                     }
 
-                    final Random rn = new Random();
-                    Map<String, Object> map = new HashMap<String, Object>();
-                    map.put("msg_uid", System.currentTimeMillis() + rn.nextInt(100));
-                    map.put("msg_text", messageText);
-                    map.put("msg_image", "false");
-                    map.put("msg_time", getTime());
-                    map.put("msg_sender", uid);
-                    map.put("msg_state", "1");
-
-                    final DatabaseReference msgSendRef = chat_ref_2.push();
-
+                    //Current User last message
                     last_msg_ref_1.child("last_modified").setValue(-1 * System.currentTimeMillis());
                     last_msg_ref_1.child("uid").setValue(chat_with_uid);
                     last_msg_ref_1.child("phone_number").setValue(chat_with_phone_number);
@@ -761,31 +789,52 @@ public class Chat extends Activity {
                     last_msg_ref_1.child("msg_image").setValue("false");
                     last_msg_ref_1.child("fcm_id").setValue(chat_with_fcm_id);
 
-                    DatabaseReference unread_msg_ref = last_msg_ref_1.child("unread_msg");
-                    unread_msg_ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                    final DatabaseReference unread_msg_ref3 = last_msg_ref_1.child("unread_msg");
+                    unread_msg_ref3.setValue("0");
+                    unread_msg_ref3.keepSynced(true);
+
+                    /*unread_msg_ref3.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
-                            if (dataSnapshot.exists()) {
-                                last_msg_ref_1.child("unread_msg").setValue(String.valueOf(Integer.valueOf(dataSnapshot.getValue().toString()) + 1));
-                            } else {
-                                last_msg_ref_1.child("unread_msg").setValue("1");
+                            if(dataSnapshot.exists()) {
+                                if (!String.valueOf(Integer.valueOf(dataSnapshot.getValue().toString())).equals("0")) {
+                                    unread_msg_ref3.setValue(String.valueOf(Integer.valueOf(dataSnapshot.getValue().toString()) + 1));
+                                } else {
+                                    unread_msg_ref3.setValue("1");
+                                }
                             }
-                        }
+                            else {
+                                    unread_msg_ref3.setValue("1");
+                                }
+                            }
 
                         @Override
                         public void onCancelled(DatabaseError databaseError) {
 
                         }
-                    });
+                    });*/
+
+                    //Chat with user message
+                    final Random rn = new Random();
+                    Map<String, Object> map = new HashMap<String, Object>();
+                    map.put("msg_uid", System.currentTimeMillis() + rn.nextInt(100));
+                    map.put("msg_text", messageText);
+                    map.put("msg_image", "false");
+                    map.put("msg_time", getTime());
+                    map.put("msg_sender", uid);
+                    map.put("msg_state", "1");
+
+                    final DatabaseReference msgSendRef = chat_ref_2.push();
 
                     msgSendRef.setValue(map).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
-                            msgSendRef.child("msg_state").setValue("2");
-                            last_msg_ref_1.child("msg_state").setValue("2");
+                            msgSendRef.child("msg_state").setValue("1");
+                            last_msg_ref_1.child("msg_state").setValue("1");
                         }
                     });
 
+                    //Chat with user last message
                     chat_ref_1.child(msgSendRef.getKey()).setValue(map).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
@@ -800,14 +849,23 @@ public class Chat extends Activity {
                             last_msg_ref_2.child("msg_image").setValue("false");
                             last_msg_ref_2.child("fcm_id").setValue(current_user_fcm_id);
 
-                            DatabaseReference unread_msg_ref = last_msg_ref_2.child("unread_msg");
-                            unread_msg_ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                            final DatabaseReference unread_msg_ref4 = last_msg_ref_2.child("unread_msg");
+                            unread_msg_ref4.keepSynced(true);
+
+                            unread_msg_ref4.addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
-                                    if (dataSnapshot.exists()) {
-                                        last_msg_ref_2.child("unread_msg").setValue(String.valueOf(Integer.valueOf(dataSnapshot.getValue().toString()) + 1));
-                                    } else {
-                                        last_msg_ref_2.child("unread_msg").setValue("1");
+
+                                    if(dataSnapshot.exists()) {
+                                        Log.d("xxx_fu",dataSnapshot.getValue().toString());
+                                        if (!String.valueOf(Integer.valueOf(dataSnapshot.getValue().toString())).equals("0")) {
+                                            unread_msg_ref4.setValue(String.valueOf(Integer.valueOf(dataSnapshot.getValue().toString()) + 1));
+                                        } else {
+                                            unread_msg_ref4.setValue("1");
+                                        }
+                                    }
+                                    else {
+                                        unread_msg_ref4.setValue("1");
                                     }
                                 }
 
@@ -817,7 +875,7 @@ public class Chat extends Activity {
                                 }
                             });
 
-                            chat_ref_1.child(msgSendRef.getKey()).child("msg_state").setValue("2");
+                            chat_ref_1.child(msgSendRef.getKey()).child("msg_state").setValue("1");
                         }
                     });
 
@@ -1017,6 +1075,8 @@ public class Chat extends Activity {
 
         getPresenceStatus();
 
+        final DatabaseReference unread_msg_ref = last_msg_ref_2.child("unread_msg");
+
         final IntentFilter theFilter = new IntentFilter();
 
         theFilter.addAction(Intent.ACTION_SCREEN_ON);
@@ -1094,36 +1154,60 @@ public class Chat extends Activity {
 
     private void getPresenceStatus() {
 
-        chatWithUserConnectionsRef.addValueEventListener(new ValueEventListener() {
+        chatWithUserPrivacyRef.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                if (settings_prefs.getString("last_seen", "Everyone").equals("Everyone") || settings_prefs.getString("last_seen", "Everyone").equals("My contacts")) {
-                    if (snapshot.exists()) {
-                        actionbar_user_status.setVisibility(View.VISIBLE);
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    String last_seen = dataSnapshot.child("last_seen").getValue().toString();
 
-                        if (snapshot.getValue().toString().equals("true")) {
-                            actionbar_user_status.setText("online");
-                        } else {
-                            lastOnlineRef.addValueEventListener(new ValueEventListener() {
+                    if (settings_prefs.getString("last_seen", "Everyone").equals("Everyone") || settings_prefs.getString("last_seen", "Everyone").equals("My contacts")) {
+                        if (last_seen.equals("Everyone") || last_seen.equals("My contacts")) {
+
+                            chatWithUserConnectionsRef.addValueEventListener(new ValueEventListener() {
                                 @Override
-                                public void onDataChange(DataSnapshot last_seen_snapshot) {
-                                    if (last_seen_snapshot.exists()) {
-                                        long now = System.currentTimeMillis();
-                                        long timestamp = Long.parseLong(last_seen_snapshot.getValue().toString());
-                                        actionbar_user_status.setText("last seen " + DateUtils.getRelativeTimeSpanString(timestamp, now, DateUtils.SECOND_IN_MILLIS, DateUtils.FORMAT_ABBREV_RELATIVE).toString());
+                                public void onDataChange(DataSnapshot snapshot) {
+                                    if (snapshot.exists()) {
+                                        actionbar_user_status.setVisibility(View.VISIBLE);
+
+                                        if (snapshot.getValue().toString().equals("true")) {
+                                            actionbar_user_status.setText("online");
+                                        } else {
+                                            lastOnlineRef.addValueEventListener(new ValueEventListener() {
+                                                @Override
+                                                public void onDataChange(DataSnapshot last_seen_snapshot) {
+                                                    if (last_seen_snapshot.exists()) {
+                                                        long now = System.currentTimeMillis();
+                                                        long timestamp = Long.parseLong(last_seen_snapshot.getValue().toString());
+                                                        actionbar_user_status.setText("last seen " + DateUtils.getRelativeTimeSpanString(timestamp, now, DateUtils.SECOND_IN_MILLIS, DateUtils.FORMAT_ABBREV_RELATIVE).toString());
+                                                    } else {
+                                                        actionbar_user_status.setText("");
+                                                    }
+                                                }
+
+                                                @Override
+                                                public void onCancelled(DatabaseError databaseError) {
+                                                }
+                                            });
+                                        }
                                     } else {
-                                        actionbar_user_status.setText("");
+                                        actionbar_user_status.setVisibility(View.GONE);
                                     }
                                 }
 
                                 @Override
                                 public void onCancelled(DatabaseError databaseError) {
+
                                 }
                             });
                         }
-                    } else {
+                        else{
+                            actionbar_user_status.setVisibility(View.GONE);
+                        }
+                    }
+                    else {
                         actionbar_user_status.setVisibility(View.GONE);
                     }
+
                 } else {
                     actionbar_user_status.setVisibility(View.GONE);
                 }
@@ -1246,13 +1330,15 @@ public class Chat extends Activity {
             params.gravity = Gravity.RIGHT;
             chat_view_image.setLayoutParams(params);
             chat_view_image.setBackgroundResource(R.drawable.image_rounded_corner_1);
+            chat_view_image.setClickable(true);
+            chat_view_image.setFocusable(true);
             chat_view_image_caption.setText(photo_caption);
             chat_view_image_caption.setTextColor(Color.parseColor("#ffffff"));
 
             chat_view_image_time_status.setText(msg_time + " ");
             chat_view_image_time_status.setCompoundDrawablesWithIntrinsicBounds(0, 0, getMsgTicks(msg_state), 0);
 
-            final DatabaseReference msg_ref_text = database.getReference("messages/" + uid + "_" + chat_with_uid + "/" + msg_id + "/msg_text");
+            final DatabaseReference msg_ref_text = database.getReference("messages/" + uid + "/" + chat_with_uid + "/" + msg_id + "/msg_text");
             msg_ref_text.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -1294,7 +1380,7 @@ public class Chat extends Activity {
                 }
             });
 
-            final DatabaseReference msg_ref_state = database.getReference("messages/" + uid + "_" + chat_with_uid + "/" + msg_id + "/msg_state");
+            final DatabaseReference msg_ref_state = database.getReference("messages/" + uid + "/" + chat_with_uid + "/" + msg_id + "/msg_state");
             msg_ref_state.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -1339,6 +1425,8 @@ public class Chat extends Activity {
             params.gravity = Gravity.LEFT;
             chat_view_image.setLayoutParams(params);
             chat_view_image.setBackgroundResource(R.drawable.image_rounded_corner_2);
+            chat_view_image.setClickable(true);
+            chat_view_image.setFocusable(true);
             chat_view_image_caption.setText(photo_caption);
             chat_view_image_caption.setTextColor(Color.parseColor("#000000"));
 
@@ -1423,13 +1511,15 @@ public class Chat extends Activity {
             params.gravity = Gravity.RIGHT;
             chat_view.setLayoutParams(params);
             chat_view.setBackgroundResource(R.drawable.chat_box_1);
+            chat_view.setClickable(true);
+            chat_view.setFocusable(true);
             chat_msg_text.setText(message);
             chat_msg_text.setTextColor(Color.parseColor("#ffffff"));
 
             chat_msg_time_status.setText(message_time + " ");
             chat_msg_time_status.setCompoundDrawablesWithIntrinsicBounds(0, 0, getMsgTicks(msg_state), 0);
 
-            final DatabaseReference msg_ref = database.getReference("messages/" + uid + "_" + chat_with_uid + "/" + msg_id + "/msg_state");
+            final DatabaseReference msg_ref = database.getReference("messages/" + uid + "/" + chat_with_uid + "/" + msg_id + "/msg_state");
             msg_ref.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -1476,6 +1566,8 @@ public class Chat extends Activity {
             params.gravity = Gravity.LEFT;
             chat_view.setLayoutParams(params);
             chat_view.setBackgroundResource(R.drawable.chat_box_2);
+            chat_view.setClickable(true);
+            chat_view.setFocusable(true);
             chat_msg_text.setText(message);
             chat_msg_text.setTextColor(Color.parseColor("#000000"));
 
